@@ -6,8 +6,9 @@ The original implementation can be found [here](https://github.com/raulmur/ORB_S
 This is the ROS implementation of the ORB-SLAM2 real-time SLAM library for **Monocular**, **Stereo** and **RGB-D** cameras that computes the camera trajectory and a sparse 3D reconstruction (in the stereo and RGB-D case with true scale). It is able to detect loops and relocalize the camera in real time. This implementation removes the Pangolin dependency, and the original viewer. All data I/O is handled via ROS topics. For vizualization you can use RViz. This repository is maintained by [Lennart Haller](http://lennarthaller.de) on behalf of [appliedAI](http://appliedai.de).
 ## Features
 - Full ROS compatibility
+- Supports the Intel RealSense R200 and D435 out of the box
 - Data I/O via ROS topics
-- Parameters can be set via the ROS parameters server during runtime
+- Parameters can be set with the rqt_reconfigure gui during runtime
 - Very quick startup through considerably sped up vocab file loading
 
 ### Related Publications:
@@ -69,6 +70,7 @@ sudo apt install libeigen3-dev
 We use the [PCL](http://pointclouds.org) to create the dense map. The PCL should come with the full ROS installation. If this is not the case make sure to install it, for example with rosdep.
 
 ## DBoW2 and g2o (Included in Thirdparty folder)
+DenseMap is now using the mt_priority_queue; Add PCL as a dependency; Adjust the build files and README
 We use modified versions of the [DBoW2](https://github.com/dorian3d/DBoW2) library to perform place recognition and [g2o](https://github.com/RainerKuemmerle/g2o) library to perform non-linear optimizations. Both modified libraries (which are BSD) are included in the *Thirdparty* folder.
 
 ## ROS / catkin
@@ -93,14 +95,21 @@ To run the algorithm expects both a vocabulary file (see the paper) and a **conf
 
 ## ROS parameters and topics
 ### Parameters
-In the launch files which can be found at ros/launch there are different parameters which can be adjusted:
+There are three types of parameters right now: static- and dynamic ros parameters and camera settings from the config file.
+The static parameters are send to the ROS parameter server at startup and are not supposed to change. They are set in the launch files which are located at ros/launch. The parameters are:
 
 - **publish_pointcloud**: Bool. If the pointcloud containing all key points (the map) should be published.
-- **localize_only**: Bool. Toggle from/to only localization. The SLAM will then no longer add no new points to the map.
-- **reset_map**: Bool. Set to true to erase the map and start new. After reset the parameter will automatically update back to false.
 - **pointcloud_frame_id**: String. The Frame id of the Pointcloud/map.
 - **camera_frame_id**: String. The Frame id of the camera position.
+
+Dynamic parameters can be changed at runtime. Either by updating them directly via the command line or by using [rqt_reconfigure](http://wiki.ros.org/rqt_reconfigure) which is the recommended way.
+The parameters are:
+
+- **localize_only**: Bool. Toggle from/to only localization. The SLAM will then no longer add no new points to the map.
+- **reset_map**: Bool. Set to true to erase the map and start new. After reset the parameter will automatically update back to false.
 - **min_num_kf_in_map**: Int. Number of key frames a map has to have to not get reset after tracking is lost.
+
+Finally, the intrinsic camera calibration parameters along with some hyperparameters can be found in the specific yaml files in orb_slam2/config.
 
 ### Published topics
 The following topics are being published and subscribed to by the nodes:
@@ -124,7 +133,22 @@ source devel/setup.bash
 ```
 you can run the the corresponding nodes with one of the following commands:
 ```
-roslaunch orb_slam2_ros orb_slam2_mono.launch
-roslaunch orb_slam2_ros orb_slam2_stereo.launch
-roslaunch orb_slam2_ros orb_slam2_rgbd.launch
+roslaunch orb_slam2_ros orb_slam2_r200_mono.launch
+roslaunch orb_slam2_ros orb_slam2_r200_stereo.launch
+roslaunch orb_slam2_ros orb_slam2_r200_rgbd.launch
+roslaunch orb_slam2_ros orb_slam2_d435_mono.launch
+roslaunch orb_slam2_ros orb_slam2_d435_rgbd.launch
 ```
+# 5. FAQ
+The node for the RealSense fails to launch when running
+```
+roslaunch realsense2_camera rs_rgbd.launch
+```
+to get the depth stream.
+**Solution:**
+install the rgbd-launch package with the command (make sure to adjust the ROS distro if needed):
+```
+sudo apt install ros-melodic-rgbd-launch
+```
+
+
