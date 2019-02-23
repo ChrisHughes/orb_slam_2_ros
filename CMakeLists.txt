@@ -22,12 +22,9 @@ cv_bridge
 image_transport
 tf
 sensor_msgs
-<<<<<<< HEAD
 pcl_conversions
 pcl_ros
-=======
 dynamic_reconfigure
->>>>>>> a76e046... Add the dynamic_reconfigure package as a dependency; Add a sample param.cfg file
 )
 
 find_package(OpenCV 3.0 QUIET)
@@ -66,13 +63,8 @@ ${catkin_LIBRARIES}
 )
 
 catkin_package (
-<<<<<<< HEAD
-  CATKIN_DEPENDS roscpp std_msgs cv_bridge image_transport tf sensor_msgs
-  LIBRARIES {PROJECT_NAME} libDBoW2 libg2o libmt_task_queue
-=======
   CATKIN_DEPENDS roscpp rospy std_msgs cv_bridge image_transport tf sensor_msgs dynamic_reconfigure
-  LIBRARIES {PROJECT_NAME} libDBoW2 libg2o
->>>>>>> a76e046... Add the dynamic_reconfigure package as a dependency; Add a sample param.cfg file
+  LIBRARIES {PROJECT_NAME} libDBoW2 libg2o libmt_task_queue
 )
 
 include_directories(
