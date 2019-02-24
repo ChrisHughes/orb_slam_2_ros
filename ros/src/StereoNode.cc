@@ -1,4 +1,5 @@
 #include "StereoNode.h"
+#include "System.h"
 
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>

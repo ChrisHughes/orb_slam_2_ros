@@ -27,7 +27,6 @@
 
 #include"FrameDrawer.h"
 #include"Map.h"
-#include"DenseMap.h"
 #include"LocalMapping.h"
 #include"LoopClosing.h"
 #include"Frame.h"
